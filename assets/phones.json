@@ -1,0 +1,27 @@
+{
+	provider_uri: "content://com.android.contacts/data/phones",
+	rdf_perifxes: {
+		"foaf": "http://xmlns.com/foaf/0.1/"
+	},
+	columns: [
+		{
+			id: "_id",
+			name: "id",
+			predicate: null
+		},
+		{
+			id: "display_name",
+			name: "username",
+			predicate: "foaf:name"
+		},
+		{
+			id: "data1",
+			name: "number",
+			predicate: "foaf:phone"
+		}
+	],
+	uri_generation: {
+		prefix: "phones",
+		values: ["_id", "display_name"]
+	}
+}
