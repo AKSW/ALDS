@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends Activity {
 
@@ -15,6 +16,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        final Button startButton = (Button) findViewById(R.id.button1);
+    	startButton.setText("Start service");
+    	startButton.setTag(0);
     }
 
 
@@ -29,7 +34,22 @@ public class MainActivity extends Activity {
     public void buttonClick(View view)
     {
     	Log.i("Button", "Button pressed");
-    	// start bg server
-        this.startService(new Intent(MainActivity.this, BackgroundService.class));
+    	// get button
+    	final Button startButton = (Button) findViewById(R.id.button1);
+    	
+    	final int status = (Integer)startButton.getTag();
+    	if(status == 0) {
+    		// start bg server
+            this.startService(new Intent(MainActivity.this, BackgroundService.class));
+    	    // change text
+        	startButton.setText("Stop service");
+        	startButton.setTag(1);
+    	} else {
+    		// start bg server
+            this.stopService(new Intent(MainActivity.this, BackgroundService.class));
+    		// change text
+        	startButton.setText("Start service");
+        	startButton.setTag(0);
+    	} 
     }
 }

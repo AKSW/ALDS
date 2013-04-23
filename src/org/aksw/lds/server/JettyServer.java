@@ -46,6 +46,7 @@ public class JettyServer {
 		
 		// create server
 		Server server = new Server(SERVERPORT);
+		server.setAttribute("host", "0.0.0.0");
 	    server.setHandler(handler);
 	    try{
 	    	server.start();
@@ -80,7 +81,7 @@ public class JettyServer {
 	        	{
 	        		Log.i("Error", ex.getMessage());
 				}
-			}			
+			}
 	    };
 	}
 	

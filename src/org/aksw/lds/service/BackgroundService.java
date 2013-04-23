@@ -1,8 +1,12 @@
 package org.aksw.lds.service;
 
+import org.aksw.lds.MainActivity;
 import org.aksw.lds.server.JettyServer;
 import org.aksw.lds.service.config.ConfigManager;
 
+import android.R;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -18,6 +22,10 @@ public class BackgroundService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i(TAG, "Service onStartCommand");
 		android.os.Debug.waitForDebugger();
+		
+		Notification note = new Notification(0, null, System.currentTimeMillis());
+	    note.flags |= Notification.FLAG_NO_CLEAR;
+	    startForeground( 42, note );
  		
 		configManager = new ConfigManager(this);
  		server = new JettyServer(configManager);
