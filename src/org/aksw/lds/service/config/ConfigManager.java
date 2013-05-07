@@ -67,10 +67,10 @@ public class ConfigManager {
 		
 		// find provider
 		for(int i = 0; i < configs.size(); i++){
-			Log.i(TAG, "'"+configs.get(i).ProviderPrefix + "' == '" + req.ProviderPrefix + "' => " + configs.get(i).ProviderPrefix.equalsIgnoreCase(req.ProviderPrefix) );
+			//Log.i(TAG, "'"+configs.get(i).ProviderPrefix + "' == '" + req.ProviderPrefix + "' => " + configs.get(i).ProviderPrefix.equalsIgnoreCase(req.ProviderPrefix) );
 			if( configs.get(i).ProviderPrefix.equalsIgnoreCase(req.ProviderPrefix) ){
 				cfg = configs.get(i); 
-				Log.i(TAG, "Provider found - "+req.ProviderPrefix+" : "+i);
+				//Log.i(TAG, "Provider found - "+req.ProviderPrefix+" : "+i);
 				break;
 			}
 		}
@@ -87,7 +87,7 @@ public class ConfigManager {
 		}else{
 			// break resource to parts
 			String[] resource = req.ResourceString.split(URL_SEPARATOR);
-			Log.i(TAG, resource.toString());
+			//Log.i(TAG, resource.toString());
 			
 			// die if resource parts doesn't match configured pattern
 			if(resource.length != cfg.ProviderURIFields.size()){
@@ -101,10 +101,20 @@ public class ConfigManager {
 				conditions += cfg.ProviderURIFields.get(i)+" = \""+URLDecoder.decode(resource[i])+"\"";
 				if( i < (resource.length-1) ) conditions += " AND ";
 			}
-			Log.i(TAG, "Conditional string: "+conditions);
+			//Log.i(TAG, "Conditional string: "+conditions);
 			
 			res = fetchData(cfg, conditions);
+			
+			// cleanup
+			conditions = null;
+			resource = null;
 		}
+		
+		// cleanup
+		cfg = null;
+		
+		// force gc
+		System.gc();
 		
 		return res;
 	}
@@ -209,7 +219,7 @@ public class ConfigManager {
 		Uri uri = Uri.parse(config.ProviderURI);
 		String[] projection = new String[config.Columns.size()];
 		for(int i = 0; i < config.Columns.size(); i++){
-			Log.i("COLUMN_"+i, config.Columns.get(i).ID);
+			//Log.i("COLUMN_"+i, config.Columns.get(i).ID);
 			projection[i] = config.Columns.get(i).ID;
 		}
 
@@ -239,7 +249,7 @@ public class ConfigManager {
 		Resource r;
 
 		// extract data
-		Log.i("START", "Extracting");
+		//Log.i("START", "Extracting");
 		people.moveToFirst();
 		do {
 			data = new HashMap<String, String>();
@@ -252,17 +262,21 @@ public class ConfigManager {
 				String value = people.getString(columnIndex);
 				
 				// log
-				Log.i("DATA", columnId + "[" + columnIndex + "]: " + value);
+				//Log.i("DATA", columnId + "[" + columnIndex + "]: " + value);
 				// store
 				data.put(columnId, value);
+				
+				// cleanup
+				columnId = null;
+				value = null;
 			}
 			
 			// prepare resource
 			String itemUrl = prepareItemUrl(data, config);
-			Log.i("ITEM_URL", itemUrl);
+			//Log.i("ITEM_URL", itemUrl);
 			// create resource
 			r = m.createResource(itemUrl);
-			Log.i("RESOURCE_CREATE", "OK");
+			//Log.i("RESOURCE_CREATE", "OK");
 			
 			// add property & value
 			Iterator<Entry<String, String>> dit = data.entrySet().iterator();
@@ -272,9 +286,16 @@ public class ConfigManager {
 				
 				if(p != null){
 					r.addProperty(p, pairs.getValue());
-					Log.i("RESOURCE_ADD_PROP", p.toString() + " " + pairs.getValue());
+					//Log.i("RESOURCE_ADD_PROP", p.toString() + " " + pairs.getValue());
 				}
+				
+				// cleanup
+				p = null;
 			}
+			
+			// cleanup
+			dit = null;
+			itemUrl = null;
 		} while (people.moveToNext());
 		
 		// output
@@ -282,7 +303,19 @@ public class ConfigManager {
 		StringWriter out = new StringWriter();
 		m.write(out, syntax);
 		String result = out.toString();
-		Log.i("OUTPUT_RDF", result);
+		//Log.i("OUTPUT_RDF", result);
+		
+		// cleanup
+		uri = null;
+		projection = null;
+		people = null;
+		m = null;
+		properties = null;
+		it = null;
+		data = null;
+		r = null;
+		syntax = null;
+		out = null;
 		
 		return result;
 	}
@@ -291,7 +324,7 @@ public class ConfigManager {
 		Uri uri = Uri.parse(config.ProviderURI);
 		String[] projection = new String[config.Columns.size()];
 		for(int i = 0; i < config.Columns.size(); i++){
-			Log.i("COLUMN_"+i, config.Columns.get(i).ID);
+			//Log.i("COLUMN_"+i, config.Columns.get(i).ID);
 			projection[i] = config.Columns.get(i).ID;
 		}
 
@@ -321,7 +354,7 @@ public class ConfigManager {
 		Resource r;
 
 		// extract data
-		Log.i("START", "Extracting");
+		//Log.i("START", "Extracting");
 		people.moveToFirst();
 		do {
 			data = new HashMap<String, String>();
@@ -334,17 +367,21 @@ public class ConfigManager {
 				String value = people.getString(columnIndex);
 				
 				// log
-				Log.i("DATA", columnId + "[" + columnIndex + "]: " + value);
+				//Log.i("DATA", columnId + "[" + columnIndex + "]: " + value);
 				// store
 				data.put(columnId, value);
+				
+				// cleanup
+				value = null;
+				columnId = null;
 			}
 			
 			// prepare resource
 			String itemUrl = prepareItemUrl(data, config);
-			Log.i("ITEM_URL", itemUrl);
+			//Log.i("ITEM_URL", itemUrl);
 			// create resource
 			r = m.createResource(itemUrl);
-			Log.i("RESOURCE_CREATE", "OK");
+			//Log.i("RESOURCE_CREATE", "OK");
 			
 			// add property & value
 			Iterator<Entry<String, String>> dit = data.entrySet().iterator();
@@ -354,9 +391,17 @@ public class ConfigManager {
 				
 				if(p != null){
 					r.addProperty(p, pairs.getValue());
-					Log.i("RESOURCE_ADD_PROP", p.toString() + " " + pairs.getValue());
+					//Log.i("RESOURCE_ADD_PROP", p.toString() + " " + pairs.getValue());
 				}
+				
+				// cleanup
+				p = null;
 			}
+			
+			// cleanup
+			dit = null;
+			itemUrl = null;
+			
 		} while (people.moveToNext());
 		
 		// output
@@ -364,7 +409,19 @@ public class ConfigManager {
 		StringWriter out = new StringWriter();
 		m.write(out, syntax);
 		String result = out.toString();
-		Log.i("OUTPUT_RDF", result);
+		//Log.i("OUTPUT_RDF", result);
+		
+		// cleanup
+		uri = null;
+		projection = null;
+		people = null;
+		m = null;
+		properties = null;
+		it = null;
+		data = null;
+		r = null;
+		syntax = null;
+		out = null;
 		
 		return result;
 	}

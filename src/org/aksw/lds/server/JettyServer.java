@@ -28,6 +28,7 @@ public class JettyServer {
 	private static final String TAG = "BackgroundService_JETTY";
 	
 	private ConfigManager configManager;
+	private Server server;
 	
 	public JettyServer(ConfigManager cm)
 	{
@@ -40,12 +41,27 @@ public class JettyServer {
 		init();
 	}
 	
+	public void stop()
+	{
+		// stop
+		try{
+			server.stop();
+			server.destroy();
+	    }catch(Exception e){
+	    	Log.e("Jetty", e.toString());
+	    }
+		
+		// clean
+		server = null;
+		configManager = null;
+	}
+	
 	private void init()
 	{
 		initHandler();
 		
 		// create server
-		Server server = new Server(SERVERPORT);
+		server = new Server(SERVERPORT);
 		server.setAttribute("host", "0.0.0.0");
 	    server.setHandler(handler);
 	    try{
@@ -66,10 +82,11 @@ public class JettyServer {
 				try
 				{
 					//How to get Query String/
-					Log.i("Query String", target);
+					//Log.i("Query String", target);
 					
 					ConfigRequest dataReq = parseTarget(target);
 					String data = configManager.getDataFor(dataReq);
+					if( data == null ) data = "Error fetching data!";
 					
 					//How To Send Responce Back
 					response.setContentType("text/turtle");
@@ -97,7 +114,7 @@ public class JettyServer {
 	    	//Log.i(TAG, " End index: " + matcher.end() + " ");
 	    	int len = matcher.groupCount()+1;
 	    	for(int i = 0; i < len; i++){
-	    		Log.i(TAG, "MATCH ["+i+"]: "+matcher.group(i));
+	    		//Log.i(TAG, "MATCH ["+i+"]: "+matcher.group(i));
 	    		if(i == 1){
 	    			res.ProviderPrefix = matcher.group(i);
 	    		}else if(i == 2){

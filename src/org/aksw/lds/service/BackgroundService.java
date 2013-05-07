@@ -43,5 +43,15 @@ public class BackgroundService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "Service onDestroy");
+		
+		// stop server
+		server.stop();
+		
+		// clean
+		server = null;
+		configManager = null;
+		
+		// force gc
+		System.gc();
 	}
 }
